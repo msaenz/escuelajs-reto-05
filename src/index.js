@@ -1,23 +1,19 @@
 const $app = document.getElementById('app');
 const $observe = document.getElementById('observe');
 const  API = 'https://rickandmortyapi.com/api/character/';
-//let  miStorage = window.localStorage;
-//miStorage.setItem('next_fetch',API)
 sessionStorage.setItem('next_fetch',API);
+let paginas = 0;
 
 const getData = api => {
   fetch(api)
     .then(response => response.json())
     .then(response => {
-      apis = response
-      console.log(apis)
-      if (response.info.next === "") {
-        //miStorage.setItem('next_fetch',API)
+      if (response.info.next === "" ) {
         sessionStorage.setItem('next_fetch',API);
+        intersectionObserver.disconnect();
+        alert("Ya no hay más personajes") ;       
       } else{
         sessionStorage.setItem('next_fetch',response.info.next);
-        //miStorage.setItem('next_fetch',response.info.next)  
-        //miStorage.setItem('pages',response.info.pages)
       }
       const characters = response.results;
       let output = characters.map(character => {
@@ -38,10 +34,9 @@ const getData = api => {
 
 async function loadData()  {
   try {
-    //getData(miStorage.getItem('next_fetch'));    
     await getData(sessionStorage.getItem('next_fetch'));
   } catch (error) {
-    console.log(`Error en la API: ${error}`)
+    console.log(`Error de comunicacón con la API: ${error}`)
   }
 }
 
