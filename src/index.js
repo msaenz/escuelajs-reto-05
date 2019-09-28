@@ -1,7 +1,7 @@
 const $app = document.getElementById('app');
 const $observe = document.getElementById('observe');
 const  API = 'https://rickandmortyapi.com/api/character/';
-var miStorage = window.localStorage;
+let  miStorage = window.localStorage;
 miStorage.setItem('next_fetch',API)
 
 const getData = api => {
@@ -10,8 +10,12 @@ const getData = api => {
     .then(response => {
       apis = response
       console.log(apis)
-      miStorage.setItem('next_fetch',response.info.next)
-      miStorage.setItem('pages',response.info.pages)
+      if (response.info.next === "") {
+        miStorage.setItem('next_fetch',API)
+      } else{
+        miStorage.setItem('next_fetch',response.info.next)  
+        miStorage.setItem('pages',response.info.pages)
+      }
       const characters = response.results;
       let output = characters.map(character => {
         return `
@@ -29,9 +33,12 @@ const getData = api => {
     .catch(error => console.log(error));
 }
 
-const loadData = () => {
-  //getData(API);
-  getData(miStorage.getItem('next_fetch'));
+async function loadData()  {
+  try {
+    getData(miStorage.getItem('next_fetch'));    
+  } catch (error) {
+    console.log(`Error en la API: ${error}`)
+  }
 }
 
 const intersectionObserver = new IntersectionObserver(entries => {
